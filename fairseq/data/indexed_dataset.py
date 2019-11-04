@@ -249,13 +249,14 @@ class IndexedRawTextDataset(FairseqDataset):
     def read_data(self, path, dictionary):
         print (path)
         if 'train' in path:
-            data_optims = pickle.load(open("/home/kchandu/fairseq/our_data/train.pkl", 'rb'))
+            data_optims = pickle.load(open("/home/spotluri/fairseq-org/roberta_vad/our_data/train.pkl", 'rb'))
         if 'valid' in path:
-            data_optims = pickle.load(open("/home/kchandu/fairseq/our_data/valid.pkl", 'rb'))
+            data_optims = pickle.load(open("/home/spotluri/fairseq-org/roberta_vad/our_data/valid.pkl", 'rb'))
         if 'test' in path:
-            data_optims = pickle.load(open("/home/kchandu/fairseq/our_data/test.pkl", 'rb'))
+            data_optims = pickle.load(open("/home/spotluri/fairseq-org/roberta_vad/our_data/test.pkl", 'rb'))
         self.lines = data_optims['zs']
         self.optims = data_optims['optims']
+        self.targets = data_optims['targets']
         #self.sizes = np.array([line.shape[0] for line in self.lines])
         self.sizes = np.array([len(line) for line in self.lines])
          
@@ -280,7 +281,7 @@ class IndexedRawTextDataset(FairseqDataset):
     @lru_cache(maxsize=8)
     def __getitem__(self, i):
         self.check_index(i)
-        return self.lines[i], self.optims[i]
+        return self.lines[i], self.optims[i], self.targets[i]
         #return self.tokens_list[i]
 
     def get_original_text(self, i):

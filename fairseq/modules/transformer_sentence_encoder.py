@@ -188,8 +188,8 @@ class TransformerSentenceEncoder(nn.Module):
         #print (len(tokens[0]))
         #exit(1)
         x = tokens[0]
-
-        x = self.embed_tokens(tokens)
+        #print(x.shape)
+        #x = self.embed_tokens(tokens)
 
         if self.embed_scale is not None:
             x *= self.embed_scale

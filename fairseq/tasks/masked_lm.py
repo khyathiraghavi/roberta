@@ -93,6 +93,7 @@ class MaskedLMTask(FairseqTask):
             self.args.dataset_impl,
             combine=combine,
         )
+        print('Length of targets {}'.format(len(dataset.targets)))
         if dataset is None:
             raise FileNotFoundError('Dataset not found: {} ({})'.format(split, split_path))
 
@@ -155,13 +156,26 @@ class MaskedLMTask(FairseqTask):
         for batch in src_dataset:
             for item in batch:
                 print (len(item))
+                print(item)
                 input()
         '''
+        
+        print (len(src_dataset)) # 89
+        print ((src_dataset[0][0][0])) 
+        print ((src_dataset[0][0][1])) 
+        print ((src_dataset[0][0][2])) 
+        #exit(1)
+        print (len(src_dataset[0])) # 51
+        print (src_dataset[0][0][0].shape) # 10X768
+        #print (src_dataset[0][0][1].shape) # 10X768
+        #exit(1)
         org_sizes = src_dataset.sizes
         src_optims = [[item[1] for item in batch] for batch in src_dataset]
         tgt_optims = [[item[1] for item in batch] for batch in tgt_dataset]
-        src_dataset = [torch.stack([torch.stack(item[0]) for item in batch]) for batch in src_dataset]
-        tgt_dataset = [torch.stack([torch.stack(item[0]) for item in batch]) for batch in tgt_dataset]
+        src_targets = [torch.Tensor([item[2] for item in batch]) for batch in src_dataset]
+        tgt_dataset = [torch.Tensor([item[2] for item in batch]) for batch in tgt_dataset]
+        src_dataset = [torch.stack([(item[0]) for item in batch]) for batch in src_dataset]
+        #tgt_dataset = [torch.stack([(item[0]) for item in batch]) for batch in tgt_dataset]
 
         '''
         print (len(src_dataset)) # 89
@@ -184,7 +198,7 @@ class MaskedLMTask(FairseqTask):
                     },
                     'src_optims': OptimsDataset(src_optims),
                     'target': NoPadDataset(
-                        tgt_dataset,
+                        src_targets,
                     ),
                     'nsentences': NumSamplesDataset(),
                     'ntokens': NumelDataset(src_dataset, reduce=True),

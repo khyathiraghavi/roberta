@@ -40,10 +40,11 @@ class MaskedLmLoss(FairseqCriterion):
         masked_tokens = sample['target'].ne(self.padding_idx)
         sample_size = masked_tokens.int().sum().item()
         '''
-        print (len(sample['target'][0]))
-        print (len(sample['target'][0][0]))
-        exit(1)
-        masked_tokens = torch.ones((4, len(sample['target'][0]), len(sample['target'][0][0])))
+        #print(len(sample['target']))
+        #print((sample['target'][0].shape))
+        #print ((sample['target'][0][0]))
+        #print (len(sample['target'][0][0]))
+        masked_tokens = torch.ones((len(sample['target'][0]), len(sample['target'][0][0]))).long()
         sample_size = masked_tokens.int().sum().item()
 
         # (Rare case) When all tokens are masked, the model results in empty
@@ -51,12 +52,15 @@ class MaskedLmLoss(FairseqCriterion):
         if sample_size == 0:
             masked_tokens = None
 
+        #print(**sample['net_input'].shape)
         logits = model(**sample['net_input'], masked_tokens=masked_tokens)[0]
+        #print(logits.shape)
         targets = model.get_targets(sample, [logits])
-
+        #print((targets[0].shape))
         if sample_size != 0:
-            targets = targets[masked_tokens]
-
+            targets = targets[0].long()
+        #print(targets.shape)
+        #print(logits.shape)
         loss = F.nll_loss(
             F.log_softmax(
                 logits.view(-1, logits.size(-1)),
